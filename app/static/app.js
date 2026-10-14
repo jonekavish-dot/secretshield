@@ -84,18 +84,24 @@
       box.innerHTML = reports.map((r) => {
         const cls = r.status === "PASS" ? "pass" : "fail";
         const count = r.finding_count === 1 ? "1 finding" : `${r.finding_count} findings`;
+        // NOTE: the API returns commit_sha, not commit.
+        const sha = r.commit_sha ? String(r.commit_sha).slice(0, 7) : "";
         const sub = [
-          r.commit ? `commit ${escapeHtml(String(r.commit).slice(0, 7))}` : "",
+          sha ? `<code class="sha">${escapeHtml(sha)}</code>` : "",
           r.branch ? escapeHtml(r.branch) : "",
           formatTime(r.timestamp),
           count,
         ].filter(Boolean).join(" · ");
+        const message = r.message
+          ? `<span class="report-msg">${escapeHtml(r.message)}</span>`
+          : "";
         return `
           <article class="report">
             <div class="report-head" data-toggle="findings-${r.id}">
               <span class="badge ${cls}">${escapeHtml(r.status)}</span>
               <div class="report-meta">
                 <span class="report-repo">${escapeHtml(r.repo || "unknown repository")}</span>
+                ${message}
                 <span class="report-sub">${sub}</span>
               </div>
               ${r.findings.length ? `<span class="chev">show details</span>` : ""}

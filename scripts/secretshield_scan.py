@@ -227,6 +227,9 @@ def main() -> int:
             "repo": os.getenv("GITHUB_REPOSITORY", ""),
             "commit": os.getenv("GITHUB_SHA", git("rev-parse", "HEAD").strip()),
             "branch": os.getenv("GITHUB_REF_NAME", git("rev-parse", "--abbrev-ref", "HEAD").strip()),
+            # The commit subject makes a scan identifiable at a glance on the
+            # dashboard; a bare SHA tells a reader nothing.
+            "message": git("log", "-1", "--pretty=%s").strip()[:500],
             "scanned_files": len(paths),
             "findings": findings,
         }

@@ -40,6 +40,7 @@ def main() -> int:
         "repo": report.get("repo", ""),
         "commit": report.get("commit", ""),
         "branch": report.get("branch", ""),
+        "message": report.get("message", ""),
         "findings": [
             {
                 "file": f.get("file", ""),

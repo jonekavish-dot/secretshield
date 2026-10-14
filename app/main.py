@@ -63,6 +63,7 @@ class ReportIn(BaseModel):
     repo: str = Field(max_length=200)
     commit: str = Field(max_length=64)
     branch: str = Field(default="", max_length=200)
+    message: str = Field(default="", max_length=500)
     findings: list[FindingIn] = Field(default_factory=list, max_length=500)
 
 
@@ -98,7 +99,9 @@ def ingest_report(report: ReportIn, x_ingest_token: str | None = Header(default=
         data["remediation"] = data["remediation"] or remediation_for(data["rule"])
         findings.append(data)
     status = summarize(findings)
-    scan_id = db.save_report(report.repo, report.commit, report.branch, status, findings)
+    scan_id = db.save_report(
+        report.repo, report.commit, report.branch, status, findings, report.message
+    )
     log.info(
         "Report stored: scan=%s repo=%s commit=%s status=%s findings=%d",
         scan_id,

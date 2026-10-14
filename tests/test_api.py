@@ -29,6 +29,7 @@ def report_body(**overrides):
         "repo": "team/secretshield",
         "commit": "a1b2c3d4e5f6",
         "branch": "main",
+        "message": "add payment config",
         "findings": [
             {
                 "file": "src/config.py",
@@ -110,6 +111,24 @@ def test_an_unmasked_value_is_remasked_before_storage(client):
     stored = client.get("/api/reports").json()[0]["findings"][0]["redacted_value"]
     assert stored != FAKE_AWS_KEY
     assert "*" in stored
+
+
+def test_commit_sha_and_message_are_stored_for_the_dashboard(client):
+    """The dashboard identifies a scan by its commit, so both must survive."""
+    client.post("/api/reports", json=report_body(), headers={"X-Ingest-Token": TOKEN})
+    scan = client.get("/api/reports").json()[0]
+    assert scan["commit_sha"] == "a1b2c3d4e5f6"
+    assert scan["message"] == "add payment config"
+    assert scan["branch"] == "main"
+
+
+def test_a_report_without_a_message_still_works(client):
+    """Older clients, and the pre-commit path, send no message."""
+    body = report_body()
+    del body["message"]
+    res = client.post("/api/reports", json=body, headers={"X-Ingest-Token": TOKEN})
+    assert res.status_code == 201
+    assert client.get("/api/reports").json()[0]["message"] == ""
 
 
 def test_an_unknown_severity_falls_back_to_high(client):

@@ -1,20 +1,22 @@
 # Test evidence
 
-Last run: 14 October 2026. 39 automated tests, all passing.
+Last run: 14 October 2026. 50 automated tests, all passing.
 
 ## Automated suite
 
 ```
 $ pytest -q
-.......................................                           [100%]
-39 passed, 1 warning in 0.71s
+..................................................                [100%]
+50 passed, 1 warning in 1.03s
 ```
 
 | File | Tests | Covers |
 | --- | --- | --- |
 | `tests/test_scanner.py` | 20 | Detection, allowlisting, entropy, redaction |
-| `tests/test_api.py` | 16 | Token enforcement, storage, Scan now, re-masking |
+| `tests/test_api.py` | 18 | Token enforcement, storage, Scan now, re-masking |
 | `tests/test_self_scan.py` | 3 | The repository passes its own gate |
+| `tests/test_dedupe.py` | 7 | One secret reports once; Gitleaks still covers missed lines |
+| `tests/test_migration.py` | 2 | Scan history survives a schema change |
 
 ### A bug this caught
 
