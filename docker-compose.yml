@@ -1,0 +1,29 @@
+services:
+  web:
+    build: .
+    container_name: secretshield-web
+    restart: unless-stopped
+    environment:
+      INGEST_TOKEN: ${INGEST_TOKEN:?set INGEST_TOKEN in .env}
+      DB_PATH: /srv/data/secretshield.db
+      LOG_PATH: /srv/logs/secretshield.log
+    volumes:
+      - shield-data:/srv/data
+      - shield-logs:/srv/logs
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: secretshield-nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  shield-data:
+  shield-logs:

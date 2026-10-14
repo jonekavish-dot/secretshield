@@ -1,0 +1,53 @@
+# SecretShield scanner configuration.
+# Extends the Gitleaks default rules with our own patterns and a fake-key allowlist.
+
+title = "SecretShield rules"
+
+[extend]
+useDefault = true
+
+# --- Custom rules -----------------------------------------------------------
+
+[[rules]]
+id = "secretshield-token"
+description = "SecretShield ingest token"
+regex = '''\b(sshield_[a-f0-9]{32})\b'''
+keywords = ["sshield_"]
+
+[[rules]]
+id = "hardcoded-password"
+description = "Password assigned in source code"
+regex = '''(?i)\b(?:password|passwd|pwd)\s*[:=]\s*['"]([^'"\s]{6,})['"]'''
+keywords = ["password", "passwd", "pwd"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API key or token assigned in source code"
+regex = '''(?i)\b(?:api[_-]?key|api[_-]?secret|secret[_-]?key|access[_-]?token|auth[_-]?token)\s*[:=]\s*['"]([A-Za-z0-9_\-/+=]{16,})['"]'''
+entropy = 3.0
+secretGroup = 1
+keywords = ["api_key", "apikey", "api-key", "secret_key", "access_token", "auth_token"]
+
+# --- Allowlist --------------------------------------------------------------
+# Documented fake credentials and the folders that hold deliberate test data.
+# Everything here is published example data, never a real secret.
+
+[allowlist]
+description = "Documented dummy credentials and test fixtures"
+paths = [
+  '''(^|/)fixtures/''',
+  '''(^|/)tests/''',
+  '''(^|/)docs/''',
+  '''(^|/)\.gitleaks\.toml$''',
+  '''(^|/)\.env\.example$''',
+  '''(^|/)README\.md$''',
+]
+regexes = [
+  # AWS's own published example key (docs.aws.amazon.com)
+  '''AKIAIOSFODNN7EXAMPLE''',
+  '''wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY''',
+  # Obvious placeholders
+  '''(?i)(your[_-]?(api[_-]?key|secret|token)|changeme|placeholder|xxxxxxxx)''',
+  '''\$\{[A-Z_]+\}''',
+]
+stopwords = ["example", "sample", "dummy", "placeholder"]

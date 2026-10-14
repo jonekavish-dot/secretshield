@@ -1,0 +1,18 @@
+# Keep line endings consistent between Windows laptops and the Linux server.
+* text=auto eol=lf
+
+# These MUST stay LF. With CRLF, bash fails with "bad interpreter: /bin/bash^M".
+*.sh        text eol=lf
+hooks/*     text eol=lf
+*.py        text eol=lf
+*.yml       text eol=lf
+*.toml      text eol=lf
+Dockerfile  text eol=lf
+
+# Never touch binaries.
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.webp binary
+*.woff2 binary
+*.zip  binary

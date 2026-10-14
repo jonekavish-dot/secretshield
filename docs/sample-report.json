@@ -1,0 +1,54 @@
+{
+  "status": "FAIL",
+  "repo": "",
+  "commit": "",
+  "branch": "",
+  "scanned_files": 1,
+  "findings": [
+    {
+      "file": "fixtures/leaky_config.py",
+      "line": 8,
+      "rule": "aws-access-key",
+      "severity": "Critical",
+      "redacted_value": "AKIA************QZXK",
+      "remediation": "Delete the key from the code and read it from an environment variable (AWS_ACCESS_KEY_ID). Deactivate and rotate the key in AWS IAM. If it was pushed, purge it from history with git filter-repo.",
+      "engine": "builtin"
+    },
+    {
+      "file": "fixtures/leaky_config.py",
+      "line": 9,
+      "rule": "aws-secret-key",
+      "severity": "Critical",
+      "redacted_value": "Kp7x********************************Mx0W",
+      "remediation": "Remove the secret key, load it from an environment variable or AWS Secrets Manager, and rotate it in AWS IAM straight away.",
+      "engine": "builtin"
+    },
+    {
+      "file": "fixtures/leaky_config.py",
+      "line": 12,
+      "rule": "github-token",
+      "severity": "Critical",
+      "redacted_value": "ghp_********************************q7R8",
+      "remediation": "Revoke the token in GitHub Settings > Developer settings, create a new one, and store it in an environment variable or GitHub Actions secret.",
+      "engine": "builtin"
+    },
+    {
+      "file": "fixtures/leaky_config.py",
+      "line": 15,
+      "rule": "generic-api-key",
+      "severity": "High",
+      "redacted_value": "sk_t****************************0000",
+      "remediation": "Move the value to an environment variable, add its name (not the value) to .env.example, and rotate the key with the provider.",
+      "engine": "builtin"
+    },
+    {
+      "file": "fixtures/leaky_config.py",
+      "line": 18,
+      "rule": "hardcoded-password",
+      "severity": "Low",
+      "redacted_value": "Supe*******123!",
+      "remediation": "Do not keep passwords in code. Read it from an environment variable or a secrets manager.",
+      "engine": "builtin"
+    }
+  ]
+}

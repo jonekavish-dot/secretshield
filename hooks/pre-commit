@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SecretShield pre-commit hook.
+# Scans staged changes and cancels the commit when a secret is found.
+set -uo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+SCANNER="$REPO_ROOT/scripts/secretshield_scan.py"
+
+if [ ! -f "$SCANNER" ]; then
+  echo "SecretShield: scanner not found at $SCANNER; skipping."
+  exit 0
+fi
+
+PYTHON="$(command -v python3 || command -v python)"
+if [ -z "$PYTHON" ]; then
+  echo "SecretShield: Python is not installed; skipping."
+  exit 0
+fi
+
+"$PYTHON" "$SCANNER" --staged
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+  exit 1
+fi
+exit 0

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecretShield</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%9B%A1%EF%B8%8F</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5.5v6c0 5 3.4 9.4 8 10.5 4.6-1.1 8-5.5 8-10.5v-6L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5L15.8 9.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <h1>SecretShield</h1>
+      <p class="tagline">Secret-leak detection for Git repositories</p>
+    </div>
+  </div>
+  <div class="status-pill" id="service-status"><span class="dot"></span><span id="status-text">checking…</span></div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" role="tab" aria-selected="true" data-panel="panel-dashboard">Scan history</button>
+  <button class="tab" role="tab" aria-selected="false" data-panel="panel-scan">Scan now</button>
+  <button class="tab" role="tab" aria-selected="false" data-panel="panel-about">How it works</button>
+</nav>
+
+<main>
+  <!-- ---------------- Dashboard ---------------- -->
+  <section id="panel-dashboard" class="panel active" role="tabpanel">
+    <div class="stat-row">
+      <div class="stat"><span class="stat-value" id="stat-total">—</span><span class="stat-label">Scans recorded</span></div>
+      <div class="stat"><span class="stat-value pass" id="stat-pass">—</span><span class="stat-label">Passed</span></div>
+      <div class="stat"><span class="stat-value fail" id="stat-fail">—</span><span class="stat-label">Blocked</span></div>
+      <div class="stat"><span class="stat-value" id="stat-findings">—</span><span class="stat-label">Findings</span></div>
+    </div>
+
+    <div class="section-head">
+      <h2>Scan history</h2>
+      <button class="ghost-btn" id="refresh-btn" type="button">Refresh</button>
+    </div>
+
+    <div id="reports"><p class="muted">Loading…</p></div>
+  </section>
+
+  <!-- ---------------- Scan now ---------------- -->
+  <section id="panel-scan" class="panel" role="tabpanel">
+    <h2>Scan now</h2>
+    <p class="muted">Paste code or configuration below. It is scanned in memory and never stored or logged.</p>
+    <textarea id="scan-input" spellcheck="false" placeholder="Paste code or configuration here, then press Scan text.
+
+No credential to hand? Press &quot;Load a dummy key&quot; for a safe fake one."></textarea>
+    <div class="scan-actions">
+      <button class="primary-btn" id="scan-btn" type="button">Scan text</button>
+      <button class="ghost-btn" id="sample-btn" type="button">Load a dummy key</button>
+      <button class="ghost-btn" id="clear-btn" type="button">Clear</button>
+    </div>
+    <div id="scan-result"></div>
+  </section>
+
+  <!-- ---------------- About ---------------- -->
+  <section id="panel-about" class="panel" role="tabpanel">
+    <h2>How it works</h2>
+    <div class="gates">
+      <div class="gate">
+        <span class="gate-no">Gate 1</span>
+        <h3>Pre-commit hook</h3>
+        <p>Scans the staged files on the developer's laptop. A Critical or High finding cancels the commit before anything is saved to history.</p>
+      </div>
+      <div class="gate">
+        <span class="gate-no">Gate 2</span>
+        <h3>CI gate</h3>
+        <p>GitHub Actions re-scans every push and pull request, so a hook skipped with <code>--no-verify</code> still fails the pipeline.</p>
+      </div>
+      <div class="gate">
+        <span class="gate-no">Gate 3</span>
+        <h3>This service</h3>
+        <p>Receives the redacted report from CI over a token-protected endpoint and shows it here, with fix steps on every finding.</p>
+      </div>
+    </div>
+
+    <h2>Safe secret handling</h2>
+    <ul class="rules">
+      <li>Secrets are read from environment variables, never written in code.</li>
+      <li><code>.env.example</code> lists variable names only, never values. <code>.env</code> is in <code>.gitignore</code>.</li>
+      <li>Every report masks its match: <code class="mono">AKIA************MPLE</code>. No log or page holds a full secret.</li>
+      <li>A leaked key is rotated at the provider, not just deleted from the file: Git keeps every old version.</li>
+      <li>If a secret was already pushed, purge it with <code>git filter-repo</code> and rotate it anyway.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <span>SecretShield · Dev Sprint'26 Problem 22</span>
+  <span class="mono" id="footer-health">/health</span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

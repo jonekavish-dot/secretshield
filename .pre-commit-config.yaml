@@ -1,0 +1,17 @@
+# Optional: use the pre-commit framework instead of hooks/pre-commit.
+#   pip install pre-commit && pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: secretshield
+        name: SecretShield secret scan
+        entry: python3 scripts/secretshield_scan.py --staged
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        args: ["--config", ".gitleaks.toml"]
