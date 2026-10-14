@@ -1,5 +1,7 @@
 # Architecture
 
+![SecretShield architecture: three gates between a developer commit and the shared repository](architecture.svg)
+
 ## The three gates
 
 ```

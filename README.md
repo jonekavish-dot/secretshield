@@ -5,6 +5,12 @@ and records every scan on a live dashboard.
 
 Dev Sprint'26 — Problem 22, Secret Leak Detection in Git Repositories.
 
+| | |
+| --- | --- |
+| **Live deployment** | **http://16.112.247.69/** |
+| Health check | http://16.112.247.69/health |
+| Team | Kavish (lead, DevOps) · Gowshik (backend) · Pranesh (frontend, docs) |
+
 ---
 
 ## The problem
@@ -22,6 +28,8 @@ every old version is still there, and anyone with repository access can read it.
 | 3 | **Live service** | Stores the redacted report and shows it on a public dashboard | — |
 
 One missed check is never enough to leak a secret.
+
+![SecretShield architecture: three gates between a developer commit and the shared repository](docs/architecture.svg)
 
 ---
 
