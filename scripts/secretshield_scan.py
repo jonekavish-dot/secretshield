@@ -138,11 +138,24 @@ def run_gitleaks(paths: list[str], ignore_allowlist: bool = False) -> list[dict]
 
 
 def dedupe(findings: list[dict]) -> list[dict]:
-    seen: dict[tuple, dict] = {}
+    """Collapse duplicate reports of the same secret.
+
+    Both engines run, so one secret is usually found twice under two rule
+    names. The built-in engine produces the more useful mask (AKIA****QZXK),
+    because Gitleaks has already redacted its own output to bare asterisks
+    before we ever see it. So a built-in finding wins its line, and Gitleaks
+    only surfaces lines the built-in rules missed -- which is exactly the
+    safety-net role it is there for.
+    """
+    builtin_lines = {
+        (f["file"], f["line"]) for f in findings if f.get("engine") != "gitleaks"
+    }
+    kept: dict[tuple, dict] = {}
     for f in findings:
-        key = (f["file"], f["line"], f["rule"])
-        seen.setdefault(key, f)
-    return sorted(seen.values(), key=lambda f: (f["file"], f["line"], f["rule"]))
+        if f.get("engine") == "gitleaks" and (f["file"], f["line"]) in builtin_lines:
+            continue
+        kept.setdefault((f["file"], f["line"], f["rule"]), f)
+    return sorted(kept.values(), key=lambda f: (f["file"], f["line"], f["rule"]))
 
 
 def scan_paths(paths: list[str], ignore_allowlist: bool = False) -> list[dict]:
